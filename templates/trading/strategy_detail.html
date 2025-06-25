@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}{{ strategy.name }}{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>{{ strategy.name }}</h2>
+        <div>
+            <a href="{% url 'run_backtest' strategy.pk %}" class="btn btn-success">Run New Backtest</a>
+            <a href="{% url 'strategy_edit' strategy.pk %}" class="btn btn-primary">Edit</a>
+            <form method="post" action="{% url 'strategy_delete' strategy.pk %}" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Details</div>
+        <div class="card-body">
+            <p><strong>Description:</strong> {{ strategy.description|linebreaksbr }}</p>
+            <p><strong>Created:</strong> {{ strategy.created_at }}</p>
+            <h5>Strategy Code:</h5>
+            <pre class="bg-light p-2 rounded"><code>{{ strategy.script }}</code></pre>
+        </div>
+    </div>
+    
+    <h4>Backtest History</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Asset</th>
+                <th>Return</th>
+                <th>Sharpe Ratio</th>
+                <th>Max Drawdown</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in backtests %}
+                <tr>
+                    <td>{{ report.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ report.asset.ticker }}</td>
+                    <td class="{% if report.total_return_pct > 0 %}text-success{% else %}text-danger{% endif %}">{{ report.total_return_pct|floatformat:2 }}%</td>
+                    <td>{{ report.sharpe_ratio|floatformat:2 }}</td>
+                    <td class="text-danger">{{ report.max_drawdown_pct|floatformat:2 }}%</td>
+                    <td><a href="{% url 'view_backtest_report' report.pk %}" class="btn btn-sm btn-info">View Report</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">No backtests have been run for this strategy yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

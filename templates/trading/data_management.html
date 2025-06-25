@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Market Data Management{% endblock %}
+
+{% block content %}
+    <h2>Market Data Management</h2>
+    
+    <div class="card my-4">
+        <div class="card-header">Fetch New Data</div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="ticker" class="form-label">Ticker (from Yahoo Finance)</label>
+                        <input type="text" class="form-control" name="ticker" id="ticker" placeholder="e.g., AAPL" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" name="start_date" id="start_date" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="end_date" class="form-label">End Date</label>
+                        <input type="date" class="form-control" name="end_date" id="end_date" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Fetch Data</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <h4>Available Assets in Database</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Name</th>
+                <th>Data Points</th>
+                <th>Oldest Record</th>
+                <th>Newest Record</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in assets %}
+                <tr>
+                    <td>{{ asset.ticker }}</td>
+                    <td>{{ asset.name }}</td>
+                    <td>{{ asset.data.count }}</td>
+                    <td>{{ asset.data.first.timestamp|date:"Y-m-d" }}</td>
+                    <td>{{ asset.data.last.timestamp|date:"Y-m-d" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5">No assets have been added yet. Use the form above to fetch data.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

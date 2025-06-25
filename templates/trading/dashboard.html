@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Dashboard</h2>
+    <p>Welcome, {{ user.username }}!</p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">My Strategies</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for strategy in strategies %}
+                            <li class="list-group-item">
+                                <a href="{% url 'strategy_detail' strategy.pk %}">{{ strategy.name }}</a>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item">No strategies yet. <a href="{% url 'strategy_create' %}">Create one now!</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Recent Backtests</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for backtest in backtests %}
+                            <li class="list-group-item">
+                                <a href="{% url 'view_backtest_report' backtest.pk %}">{{ backtest.strategy.name }} on {{ backtest.asset.ticker }}</a>
+                                <span class="float-end {% if backtest.total_return_pct > 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ backtest.total_return_pct|floatformat:2 }}%
+                                </span>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item">No backtests run yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
