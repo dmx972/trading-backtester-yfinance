@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}My Strategies{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>My Strategies</h2>
+        <a href="{% url 'strategy_create' %}" class="btn btn-primary">Create New Strategy</a>
+    </div>
+
+    <div class="list-group">
+        {% for strategy in strategies %}
+            <a href="{% url 'strategy_detail' strategy.pk %}" class="list-group-item list-group-item-action">
+                {{ strategy.name }}
+            </a>
+        {% empty %}
+            <p>You haven't created any strategies yet.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

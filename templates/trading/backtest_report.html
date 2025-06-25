@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Backtest Report for {{ report.strategy.name }}{% endblock %}
+
+{% block content %}
+    <h2>Backtest Report</h2>
+    <p>Strategy: <a href="{% url 'strategy_detail' report.strategy.pk %}">{{ report.strategy.name }}</a></p>
+
+    <div class="row">
+        <div class="col-md-7">
+            <h4>Equity Curve</h4>
+            <canvas id="equityCurveChart"></canvas>
+        </div>
+        <div class="col-md-5">
+            <h4>Performance Metrics</h4>
+            <table class="table">
+                <tbody>
+                    <tr><th>Asset</th><td>{{ report.asset.ticker }}</td></tr>
+                    <tr><th>Period</th><td>{{ report.start_date }} to {{ report.end_date }}</td></tr>
+                    <tr><th>Initial Capital</th><td>${{ report.initial_capital|floatformat:2 }}</td></tr>
+                    <tr><th>Final Balance</th><td>${{ report.final_balance|floatformat:2 }}</td></tr>
+                    <tr>
+                        <th>Total Return</th>
+                        <td class="{% if report.total_return_pct > 0 %}text-success{% else %}text-danger{% endif %}">
+                            <strong>{{ report.total_return_pct|floatformat:2 }}%</strong>
+                        </td>
+                    </tr>
+                    <tr><th>Sharpe Ratio</th><td>{{ report.sharpe_ratio|floatformat:2 }}</td></tr>
+                    <tr>
+                        <th>Max Drawdown</th>
+                        <td class="text-danger">{{ report.max_drawdown_pct|floatformat:2 }}%</td>
+                    </tr>
+                    <tr>
+                        <th>Calmar Ratio</th>
+                        <td><strong>{{ report.calmar_ratio|floatformat:2 }}</strong></td>
+                    </tr>
+                    <tr><th>Win Rate</th><td>{{ report.win_rate_pct|floatformat:2 }}%</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('equityCurveChart').getContext('2d');
+        const equityCurveData = {{ report.equity_curve|safe }};
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: equityCurveData.dates,
+                datasets: [{
+                    label: 'Portfolio Value',
+                    data: equityCurveData.values,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 20
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
