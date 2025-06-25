@@ -2,7 +2,6 @@ Quantitative Trading Strategy Framework
 
 A full-stack, open-source framework for researching, backtesting, and analyzing quantitative trading strategies. Built with Python, Django, and Celery for robust, asynchronous back-end processing and a clean web-based user interface.
 
-(To make the image above work, place your screenshot named image_39de05.png in the root folder of your repository alongside this README file.)
 About The Project
 
 This project was built to provide a personal, self-hosted platform for quantitative finance research. It moves beyond simple scripts into a full-featured application, allowing users to define complex strategies in Python, test them against historical data, and analyze their performance through a clean web dashboard.
